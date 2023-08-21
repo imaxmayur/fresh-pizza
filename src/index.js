@@ -1,6 +1,7 @@
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+
 const pizzaData = [
   {
     name: "Focaccia",
@@ -67,15 +68,26 @@ function Header() {
 }
 
 function Menu() {
+  const pizzas = pizzaData;
+  // const pizzas = [];
+  const numPizza = pizzas.length;
+
   return (
     <main className="menu">
       <h2>Our Menu</h2>
 
-      <ul className="pizzas">
-        {pizzaData.map((pizza) => (
-          <Pizza pizzaObj={pizza} key={pizza.name} />
-        ))}
-      </ul>
+      {/* This ternary operator is preferred over && operator  */}
+
+      {numPizza > 0 ? (
+        <ul className="pizzas">
+          {pizzaData.map((pizza) => (
+            <Pizza pizzaObj={pizza} key={pizza.name} />
+          ))}
+        </ul>
+      ) : (
+        <p>We're still working on our menu. Please come back later.</p>
+      )}
+
       {/* <Pizza
         name="Pizza Spinaci"
         ingredients="Tomato, mozarella, spinach, and ricotta cheese"
@@ -93,15 +105,16 @@ function Menu() {
   );
 }
 
-function Pizza(props) {
-  console.log(props);
+function Pizza({ pizzaObj }) {
+  if (pizzaObj.soldOut) return null;
+
   return (
     <li className="pizza">
-      <img src={props.pizzaObj.photoName} alt={props.pizzaObj.name} />
+      <img src={pizzaObj.photoName} alt={pizzaObj.name} />
       <div>
-        <h3>{props.pizzaObj.name}</h3>
-        <p>{props.pizzaObj.ingredients}</p>
-        <span>{props.pizzaObj.price}</span>
+        <h3>{pizzaObj.name}</h3>
+        <p>{pizzaObj.ingredients}</p>
+        <span>{pizzaObj.price}</span>
       </div>
     </li>
   );
@@ -109,20 +122,43 @@ function Pizza(props) {
 
 function Footer() {
   const hour = new Date().getHours();
-  const openHour = 12;
+  const openHour = 9;
   const closeHour = 22;
   const isOpen = hour >= openHour && hour <= closeHour;
 
   //   if (hour >= openHour && hour <= closeHour) alert("We're currently Open!");
   //   else alert("We're closed now!");
 
+  // if (!isOpen) {
+  //   <p>
+  //     We're happy to welcome you in between {openHour}:00 and {closeHour}:00
+  //   </p>;
+  // }
+
   return (
     <footer className="footer">
-      {new Date().toLocaleTimeString()}. We're currently open.
+      {isOpen ? (
+        <Order closeHour={closeHour} openHour={openHour} /> //Need to create props for new order component
+      ) : (
+        <p>
+          We're happy to welcome you in between {openHour}:00 and {closeHour}:00
+        </p>
+      )}
     </footer>
   );
 }
 
+function Order({ closeHour, openHour }) {
+  return (
+    <div className="order">
+      <p>
+        We're open from {openHour}:00 to {closeHour}:00. Come visit us or order
+        online.
+      </p>
+      <button className="btn">Order</button>
+    </div>
+  );
+}
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <StrictMode>
